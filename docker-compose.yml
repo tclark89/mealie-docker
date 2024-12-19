@@ -16,7 +16,7 @@ services:
       ALLOW_SIGNUP: "false"
       PUID: 1000
       PGID: 1000
-      TZ: America/Anchorage
+      TZ: America/Chicago
       BASE_URL: http://mealie.localdomain.lan
       # Database Settings
       DB_ENGINE: postgres
@@ -25,6 +25,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - mealie
 
   postgres:
     container_name: postgres
@@ -39,3 +41,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+
+networks:
+  mealie:
+    external: true
+    name: mealie
