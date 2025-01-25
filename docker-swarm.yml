@@ -1,0 +1,71 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:v2.4.0 # 
+    container_name: mealie
+    restart: unless-stopped
+    #ports:
+    #  - "9925:9000" # 
+    deploy:
+      resources:
+        limits:
+          memory: 1000M # mealie devs recommend setting a max mem level
+    volumes:
+      - mealie-data:/app/data/
+    networks:
+      - mealie
+    environment:
+      # Set Backend ENV Variables Here
+      ALLOW_SIGNUP: "false"
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+      BASE_URL: http://mealie.localdomain.lan
+      # Database Settings
+      DB_ENGINE: postgres
+    env_file:
+      - .env
+    # This doesn't work with swarm. Best practice seems to be
+    # to just let mealie restart until postgres is up.
+    #depends_on:
+      #postgres:
+        #condition: service_healthy
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    restart: always
+    volumes:
+      - mealie-pgdata:/var/lib/postgresql/data
+    networks:
+      - mealie
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+volumes:
+  mealie-data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=fileserver.localdomain.lan,rw,vers=4.1
+      device: ":/srv/docker/mealie/mealie-data"
+  mealie-pgdata:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=fileserver.localdomain.lan,rw,vers=4.1
+      device: ":/srv/docker/mealie/mealie-pgdata"
+
+networks:
+  mealie:
+    driver: overlay
+    name: mealie
+    external: true
+
+        #default:
+    #external: true
+    #name: mealie
