@@ -1,10 +1,6 @@
 services:
-  mealie:
+  app:
     image: ghcr.io/mealie-recipes/mealie:v2.4.0 # 
-    container_name: mealie
-    restart: unless-stopped
-    #ports:
-    #  - "9925:9000" # 
     deploy:
       resources:
         limits:
@@ -31,9 +27,7 @@ services:
         #condition: service_healthy
 
   postgres:
-    container_name: postgres
     image: postgres:15
-    restart: always
     volumes:
       - mealie-pgdata:/var/lib/postgresql/data
     networks:
