@@ -15,7 +15,7 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: America/Chicago
-      BASE_URL: http://mealie.localdomain.lan
+      BASE_URL: http://mealie.tyler-clark.com
       # Database Settings
       DB_ENGINE: postgres
     env_file:
@@ -45,13 +45,13 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=fileserver.localdomain.lan,rw,vers=4.1
+      o: addr=fileserver.tyler-clark.com,rw,vers=4.1
       device: ":/srv/docker/mealie/mealie-data"
   mealie-pgdata:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=fileserver.localdomain.lan,rw,vers=4.1
+      o: addr=fileserver.tyler-clark.com,rw,vers=4.1
       device: ":/srv/docker/mealie/mealie-pgdata"
 
 networks:
@@ -60,6 +60,3 @@ networks:
     name: mealie
     external: true
 
-        #default:
-    #external: true
-    #name: mealie
