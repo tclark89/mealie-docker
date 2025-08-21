@@ -1,0 +1,43 @@
+services:
+  mealie:
+    container_name: mealie
+    image: ghcr.io/mealie-recipes/mealie:v2.5.0 # 
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1000M # mealie devs recommend setting a max mem level
+    volumes:
+      - ./mealie-data:/app/data/
+    environment:
+      # Set Backend ENV Variables Here
+      ALLOW_SIGNUP: "false"
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+      BASE_URL: http://mealie.tyler-clark.com
+      # Database Settings
+      DB_ENGINE: postgres
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    volumes:
+      - ./mealie-pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+networks:
+  default:
+    name: mealie
+    attachable: true
