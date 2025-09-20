@@ -39,5 +39,5 @@ services:
 
 networks:
   default:
-    name: mealie
-    attachable: true
+    name: frontend
+    external: true
